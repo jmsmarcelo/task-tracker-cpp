@@ -57,3 +57,21 @@ void task::Model::setUpdatedAt(const std::string& updatedAt) {
     std::istringstream iss {updatedAt};
     iss >> std::get_time(&this->updatedAt, "%Y-%m-%d %H:%M:%S");
 }
+std::string task::Model::toJson() const {
+    std::ostringstream oss;
+    oss << '{'
+        << "\"id\":" << getId() << ','
+        << "\"description\":\"" << getDescription() << "\","
+        << "\"status\":\"" << getStatus() << "\","
+        << "\"created_at\":\"" << getCreatedAt() << "\","
+        << "\"updated_at\":\"" << getUpdatedAt() << '"'
+        << '}';
+    return oss.str();
+}
+bool task::Model::equals(const task::Model& other) const {
+    return getId() == other.getId()
+        && getDescription() == other.getDescription()
+        && getStatus() == other.getStatus()
+        && getCreatedAt() == other.getCreatedAt()
+        && getUpdatedAt() == other.getUpdatedAt();
+}

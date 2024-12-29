@@ -28,6 +28,8 @@ namespace task {
             std::string getUpdatedAt() const;
             void setUpdatedAt(const std::tm&);
             void setUpdatedAt(const std::string&);
+            std::string toJson() const;
+            bool equals(const Model&) const;
     };
 }
 

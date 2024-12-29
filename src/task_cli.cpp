@@ -1,8 +1,30 @@
 #include <iostream>
 #include <string>
+#include <regex>
 #include "TaskStatus.hpp"
+#include "TaskService.hpp"
+
+task::Service service {};
 
 void handle_add_command(int argc, char* argv[]) {
+    if(argc != 3) {
+        std::cout   << "invalid command\n"
+                    << "    usage:      add <description>\n"
+                    << "    example:    add \"Buy groceries\"\n";
+        return;
+    }
+    std::regex pattern {R"(^\s+|\s+$|[\\"]+)"};
+    std::string description = std::regex_replace(argv[2], pattern, "");
+    if(description.empty()) {
+        std::cout << "task description cannot be empty\n";
+        return;
+    }
+    long id {service.add(description)};
+    if(id > 0) {
+        std::cout << "task added successfully (ID: " << id << ")\n";
+    } else {
+        std::cout << "failed to add task\n";
+    }
 }
 void handle_update_command(int argc, char* argv[]) {
 }

@@ -1,6 +1,8 @@
 #include <vector>
 #include <fstream>
 #include <exception>
+#include <vector>
+#include <regex>
 #include "TaskRepository.hpp"
 #include "TaskModel.hpp"
 
@@ -19,6 +21,18 @@ bool task::Repository::saveData(const std::vector<task::Model>& tasks) {
     } catch(const std::exception& e) {
         return false;
     }
+}
+std::vector<task::Model> task::Repository::loadData(const std::regex& pattern) const {
+    std::vector<task::Model> tasks;
+    std::ifstream taskDataFile {TASK_DATA_FILE};
+    std::string json;
+    while(std::getline(taskDataFile, json)) {
+        if(std::regex_search(json, pattern)) {
+            tasks.push_back(task::Model {json});
+        }
+    }
+    taskDataFile.close();
+    return tasks;
 }
 long task::Repository::loadNextTaskId() const {
     std::ifstream nextTaskIdFile {NEXT_TASK_ID_FILE};

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <regex>
 #include "TaskModel.hpp"
 
 namespace task {
@@ -13,6 +14,7 @@ namespace task {
         public:
             Repository();
             bool saveData(const ::std::vector<Model>&);
+            std::vector<Model> loadData(const std::regex&) const;
             long loadNextTaskId() const;
             void updateNextTaskId(const long);
     };

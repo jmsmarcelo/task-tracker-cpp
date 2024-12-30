@@ -2,6 +2,7 @@
 #define TASK_SERVICE_HPP
 
 #include <ctime>
+#include <vector>
 #include "TaskRepository.hpp"
 
 namespace task {
@@ -12,6 +13,7 @@ namespace task {
         public:
             Service();
             long add(const std::string&);
+            std::vector<Model> find(const std::string&) const;
     };
 }
 

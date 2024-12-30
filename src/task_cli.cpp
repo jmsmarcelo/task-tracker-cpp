@@ -17,16 +17,18 @@ void print_table_line(std::string one, std::string two, std::string three) {
                     << three << '\n';
     }
 }
-void print_table_content(std::string id, std::string description, std::string status, std::string created_at, std::string updated_at) {
-    std::cout   << std::left;
-    std::cout   << "│ " << std::setw(6) << id
-                << " │ " << std::setw(50) << description
-                << " │ " << std::setw(11) << status
-                << " │ " << std::setw(19) << created_at
-                << " │ " << std::setw(19) << updated_at
-                << " │\n";
+void print_table_content(
+    const std::string& id, const std::string& description, const std::string& status,
+    const std::string& created_at, const std::string& updated_at) {
+        std::cout   << std::left;
+        std::cout   << "│ " << std::setw(6) << id
+                    << " │ " << std::setw(50) << description
+                    << " │ " << std::setw(11) << status
+                    << " │ " << std::setw(19) << created_at
+                    << " │ " << std::setw(19) << updated_at
+                    << " │\n";
 }
-void print_table_content(task::Model task) {
+void print_table_content(const task::Model& task) {
     print_table_content(std::to_string(task.getId()), task.getDescription(), task.getStatus(), task.getCreatedAt(), task.getUpdatedAt());
 }
 void handle_add_command(int argc, char* argv[]) {

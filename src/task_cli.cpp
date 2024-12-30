@@ -85,6 +85,18 @@ void handle_delete_command(int argc, char* argv[]) {
     }
 }
 void handle_mark_as_command(int argc, char* argv[], task::Status status) {
+    if(argc != 3 || !std::regex_match(argv[2], std::regex(R"(\d+)")) || !task::status_is_valid(task::status_to_string(status))) {
+        std::cout << "invalid command\n"
+                  << "  usage:        " << argv[1] << " <id>\n"
+                  << "  example:      " << argv[1] << " 1\n";
+        return;
+    }
+    if(service.markAs(std::stol(argv[2]), status)) {
+        std::cout << "task marked as " << task::status_to_string(status) << " successfully\n";
+    } else {
+        std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
+                    << "  task id not found\n";
+    }
 }
 void handle_list_command(int argc, char* argv[]) {
     if(argc > 3 || argc == 3 && !task::status_is_valid(argv[2])) {

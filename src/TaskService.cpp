@@ -46,6 +46,17 @@ bool task::Service::del(const long& id) {
     }
     return false;
 }
+bool task::Service::markAs(const long& id, const task::Status& status) {
+    auto tasks {find("all")};
+    for(auto& task : tasks) {
+        if(task.getId() == id) {
+            task.setStatus(status);
+            task.setUpdatedAt(getTmNow());
+            return repository.saveData(tasks);
+        }
+    }
+    return false;
+}
 std::vector<task::Model> task::Service::find(const std::string& filter) const {
     return repository.loadData(std::regex {(filter == "all") ? "\"id\":\\d+" : "\"status\":\"" + filter + "\""});
 }

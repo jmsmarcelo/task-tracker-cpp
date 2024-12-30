@@ -15,6 +15,7 @@ namespace task {
             long add(const std::string&);
             bool update(const long&, const std::string&);
             bool del(const long&);
+            bool markAs(const long&, const task::Status&);
             std::vector<Model> find(const std::string&) const;
     };
 }

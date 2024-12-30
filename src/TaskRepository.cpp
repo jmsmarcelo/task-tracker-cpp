@@ -11,7 +11,7 @@ bool task::Repository::saveData(const std::vector<task::Model>& tasks) {
     try {
         std::ofstream taskDataFile {TASK_DATA_FILE};
         taskDataFile << '[';
-        for(task::Model task : tasks) {
+        for(const auto& task : tasks) {
             taskDataFile    << "\n\t" << task.toJson()
                             << (task.equals(tasks.back()) ? '\n' : ',');
         }

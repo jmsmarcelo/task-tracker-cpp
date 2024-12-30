@@ -2,10 +2,35 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <map>
+#include <regex>
 #include "TaskModel.hpp"
 #include "TaskStatus.hpp"
 
 task::Model::Model(): id {0}, description {""}, status {task::Status::TODO}, createdAt {}, updatedAt {} {}
+task::Model::Model(const std::string& json): Model() {
+    std::map<std::string, std::string> data;
+    data["id"] = findValue(R"("id":(\d+),)", json);
+    data["description"] = findValue(R"::("description":"([^"]+)",)::", json);
+    data["status"] = findValue(R"::("status":"([^"]+)",)::", json);
+    data["createdAt"] = findValue(R"::("created_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",)::", json);
+    data["updatedAt"] = findValue(R"::("updated_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")::", json);
+    if(data["id"] != "") {
+        setId(std::stol(data["id"]));
+    }
+    if(data["description"] != "") {
+        setDescription(data["description"]);
+    }
+    if(data["status"] != "") {
+        setStatus(data["status"]);
+    }
+    if(data["createdAt"] != "") {
+        setCreatedAt(data["createdAt"]);
+    }
+    if(data["updatedAt"] != "") {
+        setUpdatedAt(data["updatedAt"]);
+    }
+}
 long task::Model::getId() const {
     return id;
 }
@@ -74,4 +99,12 @@ bool task::Model::equals(const task::Model& other) const {
         && getStatus() == other.getStatus()
         && getCreatedAt() == other.getCreatedAt()
         && getUpdatedAt() == other.getUpdatedAt();
+}
+
+std::string task::Model::findValue(const std::string& pattern, const std::string& json) const {
+    std::smatch match;
+    if(std::regex_search(json, match, std::regex {pattern})) {
+        return match.str(1);
+    }
+    return "";
 }

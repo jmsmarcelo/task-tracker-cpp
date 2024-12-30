@@ -13,6 +13,7 @@ namespace task {
         public:
             Service();
             long add(const std::string&);
+            bool update(const long&, const std::string&);
             std::vector<Model> find(const std::string&) const;
     };
 }

@@ -7,7 +7,7 @@
 
 task::Service service {};
 
-void print_table_line(std::string one, std::string two, std::string three) {
+void print_table_line(const std::string& one, const std::string& two, const std::string& three) {
     std::string tableLine {"1────────2────────────────────────────────────────────────────2─────────────2─────────────────────2─────────────────────3"};
     std::regex pattern {R"(1([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)3)"};
     std::smatch match;
@@ -52,6 +52,24 @@ void handle_add_command(int argc, char* argv[]) {
     }
 }
 void handle_update_command(int argc, char* argv[]) {
+    if(argc != 4 || !std::regex_match(argv[2], std::regex {"\\d+"})) {
+        std::cout   << "invalid command\n"
+                    << "    usage:      update <id> <description\n"
+                    << "    example:    update 1 \"Buy groceries and cook dinner\"\n";
+        return; 
+    }
+    auto id = std::stol(argv[2]);
+    std::string description {std::regex_replace(argv[3], std::regex {R"(^\s+|\s+$|[\\"]+)"}, "")};
+    if(description.empty()) {
+        std::cout << "task description cannot be empty\n";
+        return;
+    }
+    if(service.update(id, description)) {
+        std::cout << "task updated successfully\n";
+    } else {
+        std::cout   << "failed to update task\n"
+                    << "    task id not found or not permission to write\n";
+    }
 }
 void handle_delete_command(int argc, char* argv[]) {
 }
@@ -67,8 +85,8 @@ void handle_list_command(int argc, char* argv[]) {
     }
     print_table_line("┌", "┬", "┐");
     print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
-    std::vector<task::Model> tasks = service.find((argc == 2 ? "all" : argv[2]));
-    for(task::Model task : tasks) {
+    auto tasks {service.find((argc == 2 ? "all" : argv[2]))};
+    for(auto task : tasks) {
         print_table_line("├", "┼", "┤");
         print_table_content(task);
     }

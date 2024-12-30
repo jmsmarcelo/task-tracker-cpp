@@ -38,8 +38,7 @@ void handle_add_command(int argc, char* argv[]) {
                     << "    example:    add \"Buy groceries\"\n";
         return;
     }
-    std::regex pattern {R"(^\s+|\s+$|[\\"]+)"};
-    std::string description = std::regex_replace(argv[2], pattern, "");
+    std::string description = std::regex_replace(argv[2], std::regex {R"(^\s+|\s+$|[\\"]+)"}, "");
     if(description.empty()) {
         std::cout << "task description cannot be empty\n";
         return;
@@ -68,10 +67,22 @@ void handle_update_command(int argc, char* argv[]) {
         std::cout << "task updated successfully\n";
     } else {
         std::cout   << "failed to update task\n"
-                    << "    task id not found or not permission to write\n";
+                    << "    task id not found\n";
     }
 }
 void handle_delete_command(int argc, char* argv[]) {
+    if(argc != 3 || !std::regex_match(argv[2], std::regex(R"(\d+)"))) {
+        std::cout << "invalid command\n"
+                  << "  usage:        delete <id>\n"
+                  << "  example:      delete 1\n";
+        return;
+    }
+    if(service.del(std::stol(argv[2]))) {
+        std::cout << "task deleted successfully\n";
+    } else {
+        std::cout   << "failed to delete task\n"
+                    << "  task id not found\n";
+    }
 }
 void handle_mark_as_command(int argc, char* argv[], task::Status status) {
 }
@@ -86,7 +97,7 @@ void handle_list_command(int argc, char* argv[]) {
     print_table_line("┌", "┬", "┐");
     print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
     auto tasks {service.find((argc == 2 ? "all" : argv[2]))};
-    for(auto task : tasks) {
+    for(const auto& task : tasks) {
         print_table_line("├", "┼", "┤");
         print_table_content(task);
     }

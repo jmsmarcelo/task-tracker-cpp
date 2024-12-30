@@ -26,11 +26,21 @@ long task::Service::add(const std::string& description) {
     return 0;
 }
 bool task::Service::update(const long& id, const std::string& description) {
-    auto tasks {task::Service::find("all")};
+    auto tasks {find("all")};
     for(auto& task : tasks) {
         if(task.getId() == id) {
             task.setDescription(description);
             task.setUpdatedAt(getTmNow());
+            return repository.saveData(tasks);
+        }
+    }
+    return false;
+}
+bool task::Service::del(const long& id) {
+    auto tasks {find("all")};
+    for(auto it {tasks.begin()}; it != tasks.end(); ++it) {
+        if(it->getId() == id) {
+            tasks.erase(it);
             return repository.saveData(tasks);
         }
     }

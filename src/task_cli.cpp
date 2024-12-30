@@ -116,6 +116,27 @@ void handle_list_command(int argc, char* argv[]) {
     print_table_line("└", "┴", "┘");
 }
 void handle_help_command() {
+    std::cout << "----------------------------- Task Tracker CLI - Help -----------------------------\n";
+    std::cout << "Available commands:\n";
+    std::cout << "  add <description>           - add a new task with the given description\n";
+    std::cout << "  update <id> <description>   - Update the task with the given ID\n";
+    std::cout << "  delete <id>                 - Delete the task with the given ID\n";
+    std::cout << "  mark-in-progress <id>       - Mark the task with the given ID as in-progress\n";
+    std::cout << "  mark-done <id>              - Mark the task with the given ID as done\n";
+    std::cout << "  list                        - List all tasks\n";
+    std::cout << "  list todo                   - List all tasks with status 'todo'\n";
+    std::cout << "  list in-progress            - List all tasks with status 'in-progress'\n";
+    std::cout << "  list done                   - List all tasks with status 'done'\n";
+    std::cout << "  help                        - Display this help message\n\n";
+    std::cout << "Example usage:\n";
+    std::cout << "  add \"Buy groceries\"\n";
+    std::cout << "  update 1 \"Buy groceries and cook dinner\"\n";
+    std::cout << "  delete 1\n";
+    std::cout << "  mark-in-progress 1\n";
+    std::cout << "  mark-done 1\n";
+    std::cout << "  list\n";
+    std::cout << "  list done\n";
+    std::cout << "-----------------------------------------------------------------------------------\n";
 }
 
 int main(int argc, char* argv[]) {

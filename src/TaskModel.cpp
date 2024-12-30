@@ -8,22 +8,17 @@
 #include "TaskStatus.hpp"
 
 task::Model::Model(): id {0}, description {""}, status {task::Status::TODO}, createdAt {}, updatedAt {} {}
-task::Model::Model(const std::string& json): Model() {
+task::Model::Model(const std::string& json): createdAt {}, updatedAt {} {
     std::map<std::string, std::string> data;
     data["id"] = findValue(R"("id":(\d+),)", json);
     data["description"] = findValue(R"::("description":"([^"]+)",)::", json);
     data["status"] = findValue(R"::("status":"([^"]+)",)::", json);
     data["createdAt"] = findValue(R"::("created_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",)::", json);
     data["updatedAt"] = findValue(R"::("updated_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")::", json);
-    if(data["id"] != "") {
-        setId(std::stol(data["id"]));
-    }
-    if(data["description"] != "") {
-        setDescription(data["description"]);
-    }
-    if(data["status"] != "") {
-        setStatus(data["status"]);
-    }
+
+    setId((data["id"] != "") ? std::stol(data["id"]) : 0);
+    setDescription(data["description"]);
+    setStatus((data["status"] != "") ? data["status"] : "todo");
     if(data["createdAt"] != "") {
         setCreatedAt(data["createdAt"]);
     }
@@ -84,13 +79,11 @@ void task::Model::setUpdatedAt(const std::string& updatedAt) {
 }
 std::string task::Model::toJson() const {
     std::ostringstream oss;
-    oss << '{'
-        << "\"id\":" << getId() << ','
+    oss << "{\"id\":" << getId() << ','
         << "\"description\":\"" << getDescription() << "\","
         << "\"status\":\"" << getStatus() << "\","
         << "\"created_at\":\"" << getCreatedAt() << "\","
-        << "\"updated_at\":\"" << getUpdatedAt() << '"'
-        << '}';
+        << "\"updated_at\":\"" << getUpdatedAt() << "\"}";
     return oss.str();
 }
 bool task::Model::equals(const task::Model& other) const {

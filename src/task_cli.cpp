@@ -2,6 +2,7 @@
 #include <string>
 #include <regex>
 #include <iomanip>
+#include <locale>
 #include "TaskStatus.hpp"
 #include "TaskService.hpp"
 #include "TaskException.hpp"
@@ -10,9 +11,8 @@ task::Service service {};
 
 void print_table_line(const std::string& one, const std::string& two, const std::string& three) {
     std::string tableLine {"1────────2────────────────────────────────────────────────────2─────────────2─────────────────────2─────────────────────3"};
-    std::regex pattern {R"(1([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)3)"};
     std::smatch match;
-    if(std::regex_match(tableLine, match, pattern)) {
+    if(std::regex_match(tableLine, match, std::regex {R"(1([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)3)"})) {
         std::cout   << one << match[1].str()
                     << two << match[2].str() << two << match[3].str() << two << match[4].str() << two << match[5].str()
                     << three << '\n';
@@ -161,6 +161,7 @@ void handle_help_command() {
 }
 
 int main(int argc, char* argv[]) {
+    setlocale(LC_ALL, "en_US.UTF-8");
     if(argc == 1) {
         std::cout << "no command found\n    use 'help' for a list of commands\n";
         return 1;

@@ -43,7 +43,7 @@ long task::Repository::loadNextTaskId() const {
 void task::Repository::updateNextTaskId(const long nextTaskId) {
     std::ofstream nextTaskIdFile {NEXT_TASK_ID_FILE};
     if(!nextTaskIdFile.is_open()) {
-        throw task::FileWriteException {TASK_DATA_FILE};
+        throw task::FileWriteException {NEXT_TASK_ID_FILE};
     }
     nextTaskIdFile << nextTaskId;
     nextTaskIdFile.close();

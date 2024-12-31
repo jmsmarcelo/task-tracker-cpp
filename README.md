@@ -90,7 +90,7 @@ task-cli list done
 ```
 
 ## 📦 Project Structure
-```plaintext
+```bash
 task-tracker-cli-cpp/
 └─ src/
    ├─ task_cli.hpp         # Application entry point declaration header

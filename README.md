@@ -93,7 +93,7 @@ task-cli list done
 ```bash
 task-tracker-cli-cpp/
 └─ src/
-   ├─ task_cli.cpp         # Application entry point definition file
+   ├─ task_cli.cpp         # Application entry point
    ├─ TaskModel.hpp        # Task domain model declaration header
    ├─ TaskModel.cpp        # Task domain model definition file
    ├─ TaskStatus.hpp       # Task status enum declaration header

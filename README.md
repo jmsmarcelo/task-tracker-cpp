@@ -93,7 +93,6 @@ task-cli list done
 ```bash
 task-tracker-cli-cpp/
 └─ src/
-   ├─ task_cli.hpp         # Application entry point declaration header
    ├─ task_cli.cpp         # Application entry point definition file
    ├─ TaskModel.hpp        # Task domain model declaration header
    ├─ TaskModel.cpp        # Task domain model definition file

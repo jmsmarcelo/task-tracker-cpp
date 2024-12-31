@@ -4,6 +4,7 @@
 #include <iomanip>
 #include "TaskStatus.hpp"
 #include "TaskService.hpp"
+#include "TaskException.hpp"
 
 task::Service service {};
 
@@ -43,11 +44,16 @@ void handle_add_command(int argc, char* argv[]) {
         std::cout << "task description cannot be empty\n";
         return;
     }
-    long id {service.add(description)};
-    if(id > 0) {
-        std::cout << "task added successfully (ID: " << id << ")\n";
-    } else {
-        std::cout << "failed to add task\n";
+    try {
+        long id {service.add(description)};
+        if(id > 0) {
+            std::cout << "task added successfully (ID: " << id << ")\n";
+        } else {
+            std::cout << "failed to add task\n";
+        }
+    } catch(task::FileWriteException& e) {
+        std::cout   << "failed to add task\n   "
+                    << e.what() << '\n';
     }
 }
 void handle_update_command(int argc, char* argv[]) {
@@ -63,11 +69,16 @@ void handle_update_command(int argc, char* argv[]) {
         std::cout << "task description cannot be empty\n";
         return;
     }
-    if(service.update(id, description)) {
-        std::cout << "task updated successfully\n";
-    } else {
-        std::cout   << "failed to update task\n"
-                    << "    task id not found\n";
+    try {
+        if(service.update(id, description)) {
+            std::cout << "task updated successfully\n";
+        } else {
+            std::cout   << "failed to update task\n"
+                        << "    task id not found\n";
+        }
+    } catch(task::FileWriteException& e) {
+        std::cout   << "failed to update task\n   "
+                    << e.what() << '\n';
     }
 }
 void handle_delete_command(int argc, char* argv[]) {
@@ -77,11 +88,16 @@ void handle_delete_command(int argc, char* argv[]) {
                   << "  example:      delete 1\n";
         return;
     }
-    if(service.del(std::stol(argv[2]))) {
-        std::cout << "task deleted successfully\n";
-    } else {
-        std::cout   << "failed to delete task\n"
-                    << "  task id not found\n";
+    try {
+        if(service.del(std::stol(argv[2]))) {
+            std::cout << "task deleted successfully\n";
+        } else {
+            std::cout   << "failed to delete task\n"
+                        << "  task id not found\n";
+        }
+    } catch(task::FileWriteException& e) {
+        std::cout   << "failed to delete task\n   "
+                    << e.what() << '\n';
     }
 }
 void handle_mark_as_command(int argc, char* argv[], task::Status status) {
@@ -91,11 +107,16 @@ void handle_mark_as_command(int argc, char* argv[], task::Status status) {
                   << "  example:      " << argv[1] << " 1\n";
         return;
     }
-    if(service.markAs(std::stol(argv[2]), status)) {
-        std::cout << "task marked as " << task::status_to_string(status) << " successfully\n";
-    } else {
-        std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
-                    << "  task id not found\n";
+    try {
+        if(service.markAs(std::stol(argv[2]), status)) {
+            std::cout << "task marked as " << task::status_to_string(status) << " successfully\n";
+        } else {
+            std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
+                        << "  task id not found\n";
+        }
+    } catch(task::FileWriteException& e) {
+        std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n   "
+                    << e.what() << '\n';
     }
 }
 void handle_list_command(int argc, char* argv[]) {

@@ -1,26 +1,22 @@
-#include <vector>
 #include <fstream>
 #include <exception>
-#include <vector>
-#include <regex>
 #include "TaskRepository.hpp"
-#include "TaskModel.hpp"
+#include "TaskException.hpp"
 
 task::Repository::Repository(): TASK_DATA_FILE {"task-data.json"}, NEXT_TASK_ID_FILE {"next-task-id"} {}
 bool task::Repository::saveData(const std::vector<task::Model>& tasks) {
-    try {
-        std::ofstream taskDataFile {TASK_DATA_FILE};
-        taskDataFile << '[';
-        for(const auto& task : tasks) {
-            taskDataFile    << "\n\t" << task.toJson()
-                            << (task.equals(tasks.back()) ? '\n' : ',');
-        }
-        taskDataFile << ']';
-        taskDataFile.close();
-        return true;
-    } catch(const std::exception& e) {
-        return false;
+    std::ofstream taskDataFile {TASK_DATA_FILE};
+    if(!taskDataFile.is_open()) {
+        throw task::FileWriteException {TASK_DATA_FILE};
     }
+    taskDataFile << '[';
+    for(const auto& task : tasks) {
+        taskDataFile    << "\n\t" << task.toJson()
+                        << (task.equals(tasks.back()) ? '\n' : ',');
+    }
+    taskDataFile << ']';
+    taskDataFile.close();
+    return true;
 }
 std::vector<task::Model> task::Repository::loadData(const std::regex& pattern) const {
     std::vector<task::Model> tasks;
@@ -46,6 +42,9 @@ long task::Repository::loadNextTaskId() const {
 }
 void task::Repository::updateNextTaskId(const long nextTaskId) {
     std::ofstream nextTaskIdFile {NEXT_TASK_ID_FILE};
+    if(!nextTaskIdFile.is_open()) {
+        throw task::FileWriteException {TASK_DATA_FILE};
+    }
     nextTaskIdFile << nextTaskId;
     nextTaskIdFile.close();
 }

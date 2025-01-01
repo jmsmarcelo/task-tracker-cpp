@@ -1,15 +1,11 @@
 #include <iostream>
-#include <string>
 #include <regex>
 #include <iomanip>
 #include <locale>
-#include "TaskStatus.hpp"
-#include "TaskService.hpp"
+#include "task_cli.hpp"
 #include "TaskException.hpp"
 
-task::Service service {};
-
-void print_table_line(const std::string& one, const std::string& two, const std::string& three) {
+void task::print_table_line(const std::string& one, const std::string& two, const std::string& three) {
     std::string tableLine {"1────────2────────────────────────────────────────────────────2─────────────2─────────────────────2─────────────────────3"};
     std::smatch match;
     if(std::regex_match(tableLine, match, std::regex {R"(1([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)3)"})) {
@@ -18,7 +14,7 @@ void print_table_line(const std::string& one, const std::string& two, const std:
                     << three << '\n';
     }
 }
-void print_table_content(
+void task::print_table_content(
     const std::string& id, const std::string& description, const std::string& status,
     const std::string& created_at, const std::string& updated_at) {
         std::cout   << std::left;
@@ -29,10 +25,10 @@ void print_table_content(
                     << " │ " << std::setw(19) << updated_at
                     << " │\n";
 }
-void print_table_content(const task::Model& task) {
+void task::print_table_content(const task::Model& task) {
     print_table_content(std::to_string(task.getId()), task.getDescription(), task.getStatus(), task.getCreatedAt(), task.getUpdatedAt());
 }
-void handle_add_command(int argc, char* argv[]) {
+void task::handle_add_command(int argc, char* argv[]) {
     if(argc != 3) {
         std::cout   << "invalid command\n"
                     << "    usage:      add <description>\n"
@@ -45,7 +41,7 @@ void handle_add_command(int argc, char* argv[]) {
         return;
     }
     try {
-        long id {service.add(description)};
+        long id {task::service.add(description)};
         if(id > 0) {
             std::cout << "task added successfully (ID: " << id << ")\n";
         } else {
@@ -56,7 +52,7 @@ void handle_add_command(int argc, char* argv[]) {
                     << e.what() << '\n';
     }
 }
-void handle_update_command(int argc, char* argv[]) {
+void task::handle_update_command(int argc, char* argv[]) {
     if(argc != 4 || !std::regex_match(argv[2], std::regex {"\\d+"})) {
         std::cout   << "invalid command\n"
                     << "    usage:      update <id> <description\n"
@@ -70,7 +66,7 @@ void handle_update_command(int argc, char* argv[]) {
         return;
     }
     try {
-        if(service.update(id, description)) {
+        if(task::service.update(id, description)) {
             std::cout << "task updated successfully\n";
         } else {
             std::cout   << "failed to update task\n"
@@ -81,7 +77,7 @@ void handle_update_command(int argc, char* argv[]) {
                     << e.what() << '\n';
     }
 }
-void handle_delete_command(int argc, char* argv[]) {
+void task::handle_delete_command(int argc, char* argv[]) {
     if(argc != 3 || !std::regex_match(argv[2], std::regex(R"(\d+)"))) {
         std::cout << "invalid command\n"
                   << "  usage:        delete <id>\n"
@@ -89,7 +85,7 @@ void handle_delete_command(int argc, char* argv[]) {
         return;
     }
     try {
-        if(service.del(std::stol(argv[2]))) {
+        if(task::service.del(std::stol(argv[2]))) {
             std::cout << "task deleted successfully\n";
         } else {
             std::cout   << "failed to delete task\n"
@@ -100,15 +96,15 @@ void handle_delete_command(int argc, char* argv[]) {
                     << e.what() << '\n';
     }
 }
-void handle_mark_as_command(int argc, char* argv[], task::Status status) {
-    if(argc != 3 || !std::regex_match(argv[2], std::regex(R"(\d+)")) || !task::status_is_valid(task::status_to_string(status))) {
+void task::handle_mark_as_command(int argc, char* argv[], task::Status status) {
+    if(argc != 3 || !std::regex_match(argv[2], std::regex(R"(\d+)"))) {
         std::cout << "invalid command\n"
                   << "  usage:        " << argv[1] << " <id>\n"
                   << "  example:      " << argv[1] << " 1\n";
         return;
     }
     try {
-        if(service.markAs(std::stol(argv[2]), status)) {
+        if(task::service.markAs(std::stol(argv[2]), status)) {
             std::cout << "task marked as " << task::status_to_string(status) << " successfully\n";
         } else {
             std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
@@ -119,7 +115,7 @@ void handle_mark_as_command(int argc, char* argv[], task::Status status) {
                     << e.what() << '\n';
     }
 }
-void handle_list_command(int argc, char* argv[]) {
+void task::handle_list_command(int argc, char* argv[]) {
     if(argc > 3 || argc == 3 && !task::status_is_valid(argv[2])) {
         std::cout << "invalid command\n"
                   << "  usage:        list [todo|in-progress|done]\n"
@@ -127,16 +123,16 @@ void handle_list_command(int argc, char* argv[]) {
                   << "  example:      list done\n";
         return;
     }
-    print_table_line("┌", "┬", "┐");
-    print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
-    auto tasks {service.find((argc == 2 ? "all" : argv[2]))};
+    task::print_table_line("┌", "┬", "┐");
+    task::print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
+    auto tasks {task::service.find((argc == 2 ? "all" : argv[2]))};
     for(const auto& task : tasks) {
-        print_table_line("├", "┼", "┤");
-        print_table_content(task);
+        task::print_table_line("├", "┼", "┤");
+        task::print_table_content(task);
     }
-    print_table_line("└", "┴", "┘");
+    task::print_table_line("└", "┴", "┘");
 }
-void handle_help_command() {
+void task::handle_help_command() {
     std::cout << "----------------------------- Task Tracker CLI - Help -----------------------------\n";
     std::cout << "Available commands:\n";
     std::cout << "  add <description>           - add a new task with the given description\n";
@@ -158,32 +154,4 @@ void handle_help_command() {
     std::cout << "  list\n";
     std::cout << "  list done\n";
     std::cout << "-----------------------------------------------------------------------------------\n";
-}
-
-int main(int argc, char* argv[]) {
-    setlocale(LC_ALL, "en_US.UTF-8");
-    if(argc == 1) {
-        std::cout << "no command found\n    use 'help' for a list of commands\n";
-        return 1;
-    }
-    std::string command = argv[1];
-    if(command == "add") {
-        handle_add_command(argc, argv);
-    } else if(command == "update") {
-        handle_update_command(argc, argv);
-    } else if(command == "delete") {
-        handle_delete_command(argc, argv);
-    } else if(command == "mark-in-progress") {
-        handle_mark_as_command(argc, argv, task::Status::IN_PROGRESS);
-    } else if(command == "mark-done") {
-        handle_mark_as_command(argc, argv, task::Status::DONE);
-    } else if(command == "list") {
-        handle_list_command(argc, argv);
-    } else if(command == "help") {
-        handle_help_command();
-    } else {
-        std::cout << "invalid command\n use 'help' for a list of commands\n";
-        return 1;
-    }
-    return 0;
 }

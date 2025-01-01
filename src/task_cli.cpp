@@ -1,10 +1,11 @@
 #include <iostream>
 #include <regex>
 #include <iomanip>
-#include <locale>
 #include "task_cli.hpp"
+#include "TaskService.hpp"
 #include "TaskException.hpp"
 
+task::Service service {};
 void task::print_table_line(const std::string& one, const std::string& two, const std::string& three) {
     std::string tableLine {"1────────2────────────────────────────────────────────────────2─────────────2─────────────────────2─────────────────────3"};
     std::smatch match;
@@ -41,7 +42,7 @@ void task::handle_add_command(int argc, char* argv[]) {
         return;
     }
     try {
-        long id {task::service.add(description)};
+        long id {service.add(description)};
         if(id > 0) {
             std::cout << "task added successfully (ID: " << id << ")\n";
         } else {
@@ -66,7 +67,7 @@ void task::handle_update_command(int argc, char* argv[]) {
         return;
     }
     try {
-        if(task::service.update(id, description)) {
+        if(service.update(id, description)) {
             std::cout << "task updated successfully\n";
         } else {
             std::cout   << "failed to update task\n"
@@ -85,7 +86,7 @@ void task::handle_delete_command(int argc, char* argv[]) {
         return;
     }
     try {
-        if(task::service.del(std::stol(argv[2]))) {
+        if(service.del(std::stol(argv[2]))) {
             std::cout << "task deleted successfully\n";
         } else {
             std::cout   << "failed to delete task\n"
@@ -104,7 +105,7 @@ void task::handle_mark_as_command(int argc, char* argv[], task::Status status) {
         return;
     }
     try {
-        if(task::service.markAs(std::stol(argv[2]), status)) {
+        if(service.markAs(std::stol(argv[2]), status)) {
             std::cout << "task marked as " << task::status_to_string(status) << " successfully\n";
         } else {
             std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
@@ -125,7 +126,7 @@ void task::handle_list_command(int argc, char* argv[]) {
     }
     task::print_table_line("┌", "┬", "┐");
     task::print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
-    auto tasks {task::service.find((argc == 2 ? "all" : argv[2]))};
+    auto tasks {service.find((argc == 2 ? "all" : argv[2]))};
     for(const auto& task : tasks) {
         task::print_table_line("├", "┼", "┤");
         task::print_table_content(task);

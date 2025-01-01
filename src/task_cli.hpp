@@ -4,10 +4,8 @@
 #include <string>
 #include "TaskModel.hpp"
 #include "TaskStatus.hpp"
-#include "TaskService.hpp"
 
 namespace task {
-    task::Service service {};
     void print_table_line(const std::string&, const std::string&, const std::string&);
     void print_table_content(
         const std::string&, const std::string&, const std::string&,

@@ -93,13 +93,15 @@ task-cli list done
 ```bash
 task-tracker-cli-cpp/
 └─ src/
-   ├─ task_cli.cpp         # Application entry point
-   ├─ TaskModel.hpp        # Task domain model declaration header
-   ├─ TaskModel.cpp        # Task domain model definition file
-   ├─ TaskStatus.hpp       # Task status enum declaration header
-   ├─ TaskStatus.cpp       # Task status enum definition file
-   ├─ TaskService.hpp      # Task service logic declaration header
-   ├─ TaskService.cpp      # Task service logic definition file
+   ├─ main.cpp             # Application entry point
+   ├─ task_cli.hpp         # User input handling declaration header
+   ├─ task_cli.cpp         # User input handling definition file
+   ├─ TaskModel.hpp        # Domain model declaration header
+   ├─ TaskModel.cpp        # Domain model definition file
+   ├─ TaskStatus.hpp       # Status enum declaration header
+   ├─ TaskStatus.cpp       # Status enum definition file
+   ├─ TaskService.hpp      # Service logic declaration header
+   ├─ TaskService.cpp      # Sask service logic definition file
    ├─ TaskRepository.hpp   # File persistence handling declaration header
    └─ TaskRepository.cpp   # File persistence handling definition file
 ```

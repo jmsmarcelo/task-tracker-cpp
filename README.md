@@ -1,4 +1,4 @@
-# Task Tracker CLI
+# Task Tracker CLI - MySQL Version
 
 A command-line application for tracking and managing tasks, developed in **C++** as part of the [Task Tracker Project](https://roadmap.sh/projects/task-tracker) by **Roadmap.sh**.
 
@@ -12,44 +12,65 @@ A command-line application for tracking and managing tasks, developed in **C++**
 
 ## ⚙️ Technologies and Tools
 
-- Language: **C++**
-- CLI Structure: Input/output handling
-- Data Persistence: Store the tasks in a JSON file
+- **Language**: **C++**
+- **CLI Structure**: Input/output handling
+- **Data Persistence**: Store the tasks in a MySQL Database (Auto create if task_db not exists)
 
 ## 🛠️ How to Run the Project
 
 ### Prerequisites
 
-- For compile:
   - **Windows**: MSVC (Visual Studio Developer Command Prompt)
   - **Linux**: GCC (GNU Compiler Collection)
-- For execute:
-  - Read/write permission
+  - MySQL Connector C++ library
 
 ### Steps to Execute
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jmsmarcelo/task-tracker-cli-cpp.git
-   cd task-tracker-cli-cpp
+   git clone https://github.com/jmsmarcelo/task-tracker-cpp.git
+   cd task-tracker-cpp
+   git checkout mysql-version
    ```
-2. Compile the project:
+2. Install Dependencies:
    ```bash
    mkdir bin
    cd bin
-
+   
    # Linux:
-   g++ -o task-cli ../src/*.cpp
+   sudo apt-get install libmysqlcppconn-dev
 
    # Windows (Visual Studio Developer Command Prompt):
-   cl /EHsc /Fe:task-cli.exe ..\src\*.cpp
+   curl -O https://cdn.mysql.com/Downloads/Connector-C++/mysql-connector-c++-9.1.0-winx64.zip
+   tar -xf mysql-connector-c++-9.1.0-winx64.zip
+   copy "mysql-connector-c++-9.1.0-winx64\lib64\mysqlcppconn-10-vs14.dll"
    ```
-3. Run the application:
+3. Compile the project:
    ```bash
    # Linux:
+   g++ -I/usr/include/cppconn -o task-cli ../src/*.cpp -lmysqlcppconn
+
+   # Windows (Visual Studio Developer Command Prompt):
+   cl /EHsc /Fe:task-cli.exe /Imysql-connector-c++-9.1.0-winx64\include\jdbc ..\src\*.cpp mysql-connector-c++-9.1.0-winx64\lib64\vs14\mysqlcppconn.lib
+   ```
+4. Run the application:
+   ```bash
+   # Linux:
+   # Configure your database in the temporary environment variable:
+   export DATABASE_URL=tcp://localhost:3306
+   export DATABASE_NAME=tasks_db
+   export DATABASE_USER=root
+   export DATABASE_PASS=root
+   # run
    ./task-cli help
 
    # Windows:
+   # Configure your database in the temporary environment variable:
+   set DATABASE_URL=tcp://localhost:3306
+   set DATABASE_NAME=tasks_db
+   set DATABASE_USER=root
+   set DATABASE_PASS=root
+   # run
    .\task-cli help
    ```
 
@@ -102,8 +123,10 @@ task-tracker-cli-cpp/
    ├─ TaskStatus.cpp       # Status enum definition file
    ├─ TaskService.hpp      # Service logic declaration header
    ├─ TaskService.cpp      # Sask service logic definition file
-   ├─ TaskRepository.hpp   # File persistence handling declaration header
-   └─ TaskRepository.cpp   # File persistence handling definition file
+   ├─ TaskRepository.hpp   # Database persistence handling declaration header
+   └─ TaskRepository.cpp   # Database persistence handling definition file
+   ├─ Mysql.hpp            # Establishing and managing database connections declaration header
+   └─ Mysql.cpp            # Establishing and managing database connections definition file
 ```
 ## 🖼️ Screenshots
 ![Screenshot 2024-12-31 181609](https://github.com/user-attachments/assets/f274169f-12d0-47f7-aec7-b496013f8205)

@@ -13,7 +13,6 @@ namespace task {
             Status status;
             std::tm createdAt;
             std::tm updatedAt;
-            std::string findValue(const std::string&, const std::string&) const;
         public:
             Model();
             long getId() const;

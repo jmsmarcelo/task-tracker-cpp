@@ -5,24 +5,6 @@
 #include "TaskModel.hpp"
 
 task::Model::Model(): id {0}, description {""}, status {task::Status::TODO}, createdAt {}, updatedAt {} {}
-task::Model::Model(const std::string& json): createdAt {}, updatedAt {} {
-    std::map<std::string, std::string> data;
-    data["id"] = findValue(R"("id":(\d+),)", json);
-    data["description"] = findValue(R"::("description":"([^"]+)",)::", json);
-    data["status"] = findValue(R"::("status":"([^"]+)",)::", json);
-    data["createdAt"] = findValue(R"::("created_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",)::", json);
-    data["updatedAt"] = findValue(R"::("updated_at":"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")::", json);
-
-    setId((data["id"] != "") ? std::stol(data["id"]) : 0);
-    setDescription(data["description"]);
-    setStatus((data["status"] != "") ? data["status"] : "todo");
-    if(data["createdAt"] != "") {
-        setCreatedAt(data["createdAt"]);
-    }
-    if(data["updatedAt"] != "") {
-        setUpdatedAt(data["updatedAt"]);
-    }
-}
 long task::Model::getId() const {
     return id;
 }
@@ -74,27 +56,10 @@ void task::Model::setUpdatedAt(const std::string& updatedAt) {
     std::istringstream iss {updatedAt};
     iss >> std::get_time(&this->updatedAt, "%Y-%m-%d %H:%M:%S");
 }
-std::string task::Model::toJson() const {
-    std::ostringstream oss;
-    oss << "{\"id\":" << getId() << ','
-        << "\"description\":\"" << getDescription() << "\","
-        << "\"status\":\"" << getStatus() << "\","
-        << "\"created_at\":\"" << getCreatedAt() << "\","
-        << "\"updated_at\":\"" << getUpdatedAt() << "\"}";
-    return oss.str();
-}
 bool task::Model::equals(const task::Model& other) const {
     return getId() == other.getId()
         && getDescription() == other.getDescription()
         && getStatus() == other.getStatus()
         && getCreatedAt() == other.getCreatedAt()
         && getUpdatedAt() == other.getUpdatedAt();
-}
-
-std::string task::Model::findValue(const std::string& pattern, const std::string& json) const {
-    std::smatch match;
-    if(std::regex_search(json, match, std::regex {pattern})) {
-        return match.str(1);
-    }
-    return "";
 }

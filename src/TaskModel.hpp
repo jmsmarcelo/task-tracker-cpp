@@ -16,7 +16,6 @@ namespace task {
             std::string findValue(const std::string&, const std::string&) const;
         public:
             Model();
-            Model(const std::string&);
             long getId() const;
             void setId(const long&);
             std::string getDescription() const;
@@ -30,7 +29,6 @@ namespace task {
             std::string getUpdatedAt() const;
             void setUpdatedAt(const std::tm&);
             void setUpdatedAt(const std::string&);
-            std::string toJson() const;
             bool equals(const Model&) const;
     };
 }

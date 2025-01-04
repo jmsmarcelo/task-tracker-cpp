@@ -14,7 +14,7 @@ A command-line application for tracking and managing tasks, developed in **C++**
 
 - **Language**: **C++**
 - **CLI Structure**: Input/output handling
-- **Data Persistence**: Store the tasks in a MySQL Database (Auto create if task_db not exists)
+- **Data Persistence**: Store the tasks in a MySQL Database
 
 ## 🛠️ How to Run the Project
 
@@ -57,19 +57,19 @@ A command-line application for tracking and managing tasks, developed in **C++**
    ```bash
    # Linux:
    # Configure your database in the temporary environment variable:
-   export DATABASE_URL=tcp://localhost:3306
-   export DATABASE_NAME=tasks_db
-   export DATABASE_USER=root
-   export DATABASE_PASS=root
+   export DATABASE_URL=tcp://localhost:3306  # Your database URL
+   export DATABASE_NAME=tasks_db             # Auto create if not exists
+   export DATABASE_USER=root                 # Your username
+   export DATABASE_PASS=root                 # Your password
    # run
    ./task-cli help
 
    # Windows:
    # Configure your database in the temporary environment variable:
-   set DATABASE_URL=tcp://localhost:3306
-   set DATABASE_NAME=tasks_db
-   set DATABASE_USER=root
-   set DATABASE_PASS=root
+   set DATABASE_URL=tcp://localhost:3306  # Your database URL
+   set DATABASE_NAME=tasks_db             # Auto create if not exists
+   set DATABASE_USER=root                 # Your username
+   set DATABASE_PASS=root                 # Your password
    # run
    .\task-cli help
    ```

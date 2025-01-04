@@ -10,13 +10,14 @@ namespace task {
         private:
             Repository repository;
             std::tm getTmNow() const;
+            std::string getStringNow();
         public:
             Service();
             long add(const std::string&);
             bool update(const long&, const std::string&);
             bool del(const long&);
             bool markAs(const long&, const task::Status&);
-            std::vector<Model> find(const std::string&) const;
+            std::vector<Model> find(const std::string&);
     };
 }
 

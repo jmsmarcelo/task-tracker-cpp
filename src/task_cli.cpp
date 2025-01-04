@@ -3,7 +3,6 @@
 #include <iomanip>
 #include "task_cli.hpp"
 #include "TaskService.hpp"
-#include "TaskException.hpp"
 
 task::Service service {};
 void task::print_table_line(const std::string& one, const std::string& two, const std::string& three) {
@@ -48,7 +47,7 @@ void task::handle_add_command(int argc, char* argv[]) {
         } else {
             std::cout << "failed to add task\n";
         }
-    } catch(task::FileWriteException& e) {
+    } catch(sql::SQLException& e) {
         std::cout   << "failed to add task\n   "
                     << e.what() << '\n';
     }
@@ -73,7 +72,7 @@ void task::handle_update_command(int argc, char* argv[]) {
             std::cout   << "failed to update task\n"
                         << "    task id not found\n";
         }
-    } catch(task::FileWriteException& e) {
+    } catch(sql::SQLException& e) {
         std::cout   << "failed to update task\n   "
                     << e.what() << '\n';
     }
@@ -92,7 +91,7 @@ void task::handle_delete_command(int argc, char* argv[]) {
             std::cout   << "failed to delete task\n"
                         << "  task id not found\n";
         }
-    } catch(task::FileWriteException& e) {
+    } catch(sql::SQLException& e) {
         std::cout   << "failed to delete task\n   "
                     << e.what() << '\n';
     }
@@ -111,7 +110,7 @@ void task::handle_mark_as_command(int argc, char* argv[], task::Status status) {
             std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n"
                         << "  task id not found\n";
         }
-    } catch(task::FileWriteException& e) {
+    } catch(sql::SQLException& e) {
         std::cout   << "failed to mark task as " << task::status_to_string(status) << "\n   "
                     << e.what() << '\n';
     }

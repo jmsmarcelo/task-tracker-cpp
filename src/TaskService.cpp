@@ -1,4 +1,6 @@
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include "TaskService.hpp"
 #include "TaskModel.hpp"
 
@@ -9,51 +11,27 @@ std::tm task::Service::getTmNow() const {
     std::mktime(&now);
     return now;
 }
+std::string task::Service::getStringNow() {
+    std::ostringstream oss;
+    std::tm now = getTmNow();
+    oss << std::put_time(&now, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
 long task::Service::add(const std::string& description) {
-    auto tasks {find("all")};
-    task::Model task;
-    task.setId(repository.loadNextTaskId());
-    task.setDescription(description);
-    task.setCreatedAt(getTmNow());
-    tasks.push_back(task);
-    if(repository.saveData(tasks)) {
-        repository.updateNextTaskId(task.getId() + 1);
-        return task.getId();
-    }
-    return 0;
+    return repository.insert(description, getStringNow());
 }
 bool task::Service::update(const long& id, const std::string& description) {
-    auto tasks {find("all")};
-    for(auto& task : tasks) {
-        if(task.getId() == id) {
-            task.setDescription(description);
-            task.setUpdatedAt(getTmNow());
-            return repository.saveData(tasks);
-        }
-    }
-    return false;
+    return repository.updateDescription(id, description, getStringNow());
 }
 bool task::Service::del(const long& id) {
-    auto tasks {find("all")};
-    for(auto it {tasks.begin()}; it != tasks.end(); ++it) {
-        if(it->getId() == id) {
-            tasks.erase(it);
-            return repository.saveData(tasks);
-        }
-    }
-    return false;
+    return repository.del(id, getStringNow());
 }
 bool task::Service::markAs(const long& id, const task::Status& status) {
-    auto tasks {find("all")};
-    for(auto& task : tasks) {
-        if(task.getId() == id) {
-            task.setStatus(status);
-            task.setUpdatedAt(getTmNow());
-            return repository.saveData(tasks);
-        }
-    }
-    return false;
+    return repository.updateStatus(id, task::status_to_string(status), getStringNow());
 }
-std::vector<task::Model> task::Service::find(const std::string& filter) const {
-    return repository.loadData(std::regex {(filter == "all") ? "\"id\":\\d+" : "\"status\":\"" + filter + "\""});
+std::vector<task::Model> task::Service::find(const std::string& filter) {
+    if(filter == "all") {
+        return repository.findAll(0);
+    }
+    return repository.findAllByStatus(filter, 0);
 }

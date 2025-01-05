@@ -6,12 +6,6 @@
 #include "TaskStatus.hpp"
 
 namespace task {
-    void print_table_line(const std::string&, const std::string&, const std::string&);
-    void print_table_content(
-        const std::string&, const std::string&, const std::string&,
-        const std::string&, const std::string&
-    );
-    void print_table_content(const task::Model&);
     void handle_add_command(int, char* []);
     void handle_update_command(int, char* []);
     void handle_delete_command(int, char* []);

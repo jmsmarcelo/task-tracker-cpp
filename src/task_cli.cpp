@@ -1,33 +1,69 @@
 #include <iostream>
 #include <regex>
 #include <iomanip>
+#include <map>
 #include "task_cli.hpp"
 #include "TaskService.hpp"
 #include "TaskException.hpp"
 
 task::Service service {};
-void task::print_table_line(const std::string& one, const std::string& two, const std::string& three) {
-    std::string tableLine {"1────────2────────────────────────────────────────────────────2─────────────2─────────────────────2─────────────────────3"};
-    std::smatch match;
-    if(std::regex_match(tableLine, match, std::regex {R"(1([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)2([^\d]+)3)"})) {
-        std::cout   << one << match[1].str()
-                    << two << match[2].str() << two << match[3].str() << two << match[4].str() << two << match[5].str()
-                    << three << '\n';
+size_t get_width(const std::string& txt) {
+    size_t count = 0;
+    for(unsigned char c : txt) {
+        if((c & 0xC0) != 0x80) {
+            ++count;
+        }
     }
+    return count;
 }
-void task::print_table_content(
+std::string text_format(const std::string& txt, size_t width, const char32_t complement, char position) {
+    size_t w = get_width(txt);
+    if(width <= w) return txt;
+
+    size_t total_space = width - w;
+    size_t left_space = 0;
+    size_t right_space = total_space;
+    if(position == 'c') {
+        left_space = total_space / 2;
+        right_space = total_space - left_space;
+    } else if(position == 'r') {
+        left_space = total_space;
+        right_space = 0;
+    }
+    return std::string(left_space, complement) + txt + std::string(right_space, complement);
+}
+void print_table_line(const  std::map<std::string, size_t>& widths) {
+    std::cout   << "+-" << text_format("", widths.at("id"), '-', 'l')
+                << "-+-" << text_format("", widths.at("description"), '-', 'l')
+                << "-+-" << text_format("", widths.at("status"), '-', 'l')
+                << "-+-" << text_format("", widths.at("created_at"), '-', 'l')
+                << "-+-" << text_format("", widths.at("updated_at"), '-', 'l')
+                << "-+" << '\n';
+}
+void print_table_content(
     const std::string& id, const std::string& description, const std::string& status,
-    const std::string& created_at, const std::string& updated_at) {
-        std::cout   << std::left;
-        std::cout   << "│ " << std::setw(6) << id
-                    << " │ " << std::setw(50) << description
-                    << " │ " << std::setw(11) << status
-                    << " │ " << std::setw(19) << created_at
-                    << " │ " << std::setw(19) << updated_at
+    const std::string& created_at, const std::string& updated_at,  const  std::map<std::string, size_t>& widths, const char32_t complement, char position = 'l') {
+        std::cout   << "│ " << text_format(id, widths.at("id"), complement, position)
+                    << " │ " << text_format(description, widths.at("description"), complement, position)
+                    << " │ " << text_format(status, widths.at("status"), complement, position)
+                    << " │ " << text_format(created_at, widths.at("created_at"), complement, position)
+                    << " │ " << text_format(updated_at, widths.at("updated_at"), complement, position)
                     << " │\n";
 }
-void task::print_table_content(const task::Model& task) {
-    print_table_content(std::to_string(task.getId()), task.getDescription(), task.getStatus(), task.getCreatedAt(), task.getUpdatedAt());
+void print_table(const std::vector<task::Model>& tasks) {
+    std::map<std::string, size_t> widths{{"id", 6}, {"description", 11}, {"status", 11}, {"created_at", 19}, {"updated_at", 19}};
+    for(const auto& task : tasks) {
+        if(get_width(task.getDescription()) > widths.at("description")) {
+            widths.at("description") = get_width(task.getDescription());
+        }
+    }
+    print_table_line(widths);
+    print_table_content("ID", "Description", "Status", "Created At", "Updated At", widths, ' ', 'c');
+    for(const auto& task : tasks) {
+        print_table_line(widths);
+        print_table_content(std::to_string(task.getId()), task.getDescription(), task.getStatus(), task.getCreatedAt(), task.getUpdatedAt(), widths, ' ');
+    }
+    print_table_line(widths);
 }
 void task::handle_add_command(int argc, char* argv[]) {
     if(argc != 3) {
@@ -124,14 +160,7 @@ void task::handle_list_command(int argc, char* argv[]) {
                   << "  example:      list done\n";
         return;
     }
-    task::print_table_line("┌", "┬", "┐");
-    task::print_table_content("  ID", "                   Description", "   Status", "    Created At", "    Updated At");
-    auto tasks {service.find((argc == 2 ? "all" : argv[2]))};
-    for(const auto& task : tasks) {
-        task::print_table_line("├", "┼", "┤");
-        task::print_table_content(task);
-    }
-    task::print_table_line("└", "┴", "┘");
+    print_table(service.find((argc == 2 ? "all" : argv[2])));
 }
 void task::handle_help_command() {
     std::cout << "----------------------------- Task Tracker CLI - Help -----------------------------\n";

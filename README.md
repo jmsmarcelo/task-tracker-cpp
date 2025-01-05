@@ -2,6 +2,8 @@
 
 A command-line application for tracking and managing tasks, developed in **C++** as part of the [Task Tracker Project](https://roadmap.sh/projects/task-tracker) by **Roadmap.sh**.
 
+**Version with database**: [Task Tracker CLI - MySQL Version](https://github.com/jmsmarcelo/task-tracker-cpp/tree/mysql-version)
+
 ## 📋 Features
 - Add, Update, and Delete tasks
 - Mark a task as in progress or done
